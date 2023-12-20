@@ -1,36 +1,38 @@
-import sys
+#!/bin/bash
 
-def factorize(n):
-    factors = []
-    for i in range(2, int(n**0.5) + 1):
-        while n % i == 0:
-            factors.append(i)
-            n //= i
-    if n > 1:
-        factors.append(n)
-    return factors
+check_factor() {
+    if [ $# -ne 3 ]; then
+        args=("$@")
+        count=0
+        num2=1
+        for a in "${args[@]}"; do
+            if [ $count -gt 1 ]; then
+                num2=$((a * num2))
+            fi
+            count=$((count + 1))
+        done
+    else
+        num2=$3
+    fi
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: factors <file>")
-        sys.exit(1)
+    num1=$2
+    num=$(echo "$1" | sed 's/:/=/g')
 
-    input_file = sys.argv[1]
+    if ((num2 > num1)); then
+        numcp=$num1
+        num1=$num2
+        num2=$numcp
+    fi
 
-    try:
-        with open(input_file, 'r') as file:
-            for line in file:
-                number = int(line.strip())
-                factors_list = factorize(number)
-                factors_str = '*'.join(map(str, factors_list))
-                print(f'{number}={factors_str}')
+    echo "$num$num1*$num2"
+}
 
-    except FileNotFoundError:
-        print(f"Error: File '{input_file}' not found.")
-        sys.exit(1)
-    except ValueError:
-        print("Error: Invalid number in the file.")
-        sys.exit(1)
+if [ $# -ne 1 ]; then
+    echo 'Usage: factors <file>'
+    exit 1
+fi
 
-if __name__ == "__main__":
-    main()
+while read -r number; do
+    result=$(factor "$number")
+    check_factor $result
+done < "$1"
