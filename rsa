@@ -23,14 +23,29 @@ def check_factor(*args):
     print(f"{num}{num1}*{num2}")
 
 if len(sys.argv) != 2:
-    print('Usage: factors <file>')
+    print('Usage: factorize <file>')
     sys.exit(1)
 
 try:
     with open(sys.argv[1], 'r') as file:
         for line in file:
             number = int(line.strip())
-            result = subprocess.check_output(["factor", str(number)]).decode("utf-8").split()[1:]
+            
+            # Function to find prime factors
+            def prime_factors(n):
+                factors = []
+                i = 2
+                while i * i <= n:
+                    if n % i:
+                        i += 1
+                    else:
+                        n //= i
+                        factors.append(i)
+                if n > 1:
+                    factors.append(n)
+                return factors
+            
+            result = prime_factors(number)
             check_factor(*result)
 except FileNotFoundError:
     print(f"Error: File '{sys.argv[1]}' not found.")
@@ -38,6 +53,4 @@ except FileNotFoundError:
 except ValueError:
     print("Error: Invalid number in the file.")
     sys.exit(1)
-except subprocess.CalledProcessError:
-    print("Error: 'factor' command not found. Please ensure it is installed on your system.")
-    sys.exit(1)
+
