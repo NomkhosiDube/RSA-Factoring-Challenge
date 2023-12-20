@@ -2,29 +2,32 @@
 
 import sys
 
-def factorize(n):
-    factors = []
-    for i in range(2, n + 1):
-        while n % i == 0:
-            factors.append(i)
-            n //= i
-    return factors
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
 
-def check_factorization(n, factors):
-    num1 = min(factors)
-    num2 = n // num1
-    print(f"{n}={num1}*{num2}")
+def factorize_into_primes(n):
+    for i in range(2, n):
+        if n % i == 0 and is_prime(i) and is_prime(n // i):
+            return i, n // i
+    return None
 
 if len(sys.argv) != 2:
-    print('Usage: factors <file>')
+    print('Usage: rsa_factors <file>')
     sys.exit(1)
 
 try:
     with open(sys.argv[1], 'r') as file:
-        for line in file:
-            number = int(line.strip())
-            factors_list = factorize(number)
-            check_factorization(number, factors_list)
+        number = int(file.readline().strip())
+        prime_factors = factorize_into_primes(number)
+        if prime_factors:
+            print(f"{number} = {prime_factors[0]} * {prime_factors[1]} (both prime)")
+        else:
+            print(f"Error: Could not find prime factors for {number}")
 except FileNotFoundError:
     print(f"Error: File '{sys.argv[1]}' not found.")
     sys.exit(1)
