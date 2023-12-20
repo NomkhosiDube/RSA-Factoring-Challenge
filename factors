@@ -1,38 +1,52 @@
-#!/bin/bash
+#include <stdio.h>
 
-check_factor() {
-    if [ $# -ne 3 ]; then
-        args=("$@")
-        count=0
-        num2=1
-        for a in "${args[@]}"; do
-            if [ $count -gt 1 ]; then
-                num2=$((a * num2))
-            fi
-            count=$((count + 1))
-        done
-    else
-        num2=$3
-    fi
+/* Function to factorize a number and print the result */
+void factorize(int n) {
+    printf("%d=", n);
 
-    num1=$2
-    num=$(echo "$1" | sed 's/:/=/g')
+    /* Loop to find prime factors */
+    for (int i = 2; i <= n; ++i) {
+        while (n % i == 0) {
+            /* Print prime factor */
+            printf("%d", i);
 
-    if ((num2 > num1)); then
-        numcp=$num1
-        num1=$num2
-        num2=$numcp
-    fi
+            /* Divide the number by the prime factor */
+            n /= i;
 
-    echo "$num$num1*$num2"
+            /* Print '*' if there are more prime factors */
+            if (n > 1) {
+                printf("*");
+            }
+        }
+    }
+
+    printf("\n");
 }
 
-if [ $# -ne 1 ]; then
-    echo 'Usage: factors <file>'
-    exit 1
-fi
+int main(int argc, char* argv[]) {
+    /* Check if the correct number of command-line arguments is provided */
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <file>\n", argv[0]);
+        return 1;
+    }
 
-while read -r number; do
-    result=$(factor "$number")
-    check_factor $result
-done < "$1"
+    /* Open the input file for reading */
+    FILE* inputFile = fopen(argv[1], "r");
+
+    /* Check if the file was successfully opened */
+    if (!inputFile) {
+        fprintf(stderr, "Error: Could not open file %s\n", argv[1]);
+        return 1;
+    }
+
+    int number;
+    /* Read numbers from the file and factorize each one */
+    while (fscanf(inputFile, "%d", &number) == 1) {
+        factorize(number);
+    }
+
+    /* Close the input file */
+    fclose(inputFile);
+
+    return 0;
+}
