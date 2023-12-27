@@ -3,7 +3,7 @@
 import subprocess
 import sys
 
-def check_factor(*args):
+def calculate_product(*args):
     if len(args) != 3:
         count = 0
         num2 = 1
@@ -31,7 +31,7 @@ try:
         for line in file:
             number = int(line.strip())
             result = subprocess.check_output(["factor", str(number)]).decode("utf-8").split()[1:]
-            check_factor(*result)
+            calculate_product(*result)
 except FileNotFoundError:
     print(f"Error: File '{sys.argv[1]}' not found.")
     sys.exit(1)
@@ -41,3 +41,4 @@ except ValueError:
 except subprocess.CalledProcessError:
     print("Error: 'factor' command not found. Please ensure it is installed on your system.")
     sys.exit(1)
+
